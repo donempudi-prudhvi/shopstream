@@ -1,4 +1,4 @@
-# Step by ste to build a java project for beginners
+# Step by step process to build a java project
 
 ## Part 1 - Prerequisites - MacBook
 - Download and install VS Code. [If you are unaware of this step, sort this out first.]
