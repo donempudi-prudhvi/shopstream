@@ -12,7 +12,6 @@
     source "$HOME/.sdkman/bin/sdkman-init.sh"
 
     sdk version
-
     ```
     *`SDKMAN` help you switch between multiple versions of java while developing the application*
 - You should see output containing the latest script and native versions:
@@ -64,3 +63,21 @@
 - **Version management:** the BOM you imported in the parent POM guarantees all those libraries are compatible.
 - **Production features:**Actuator (the /actuator/health you called), externalized configuration (application.yml), and metrics.
 - **Executable packaging:** the repackage step that produced your fat jar.
+
+### pom file [Project Object Model]
+- pom is an xml file, Maven needs pom file to build a java application, without it Maven doesn't know what to do. this file must be present at root directory followed by one per sub directory. 
+- pom tells maven the following:
+    - Who the project is ? 
+    - What it needs?
+    - How to build it?
+    - How does this file related to other pom files?
+- **Below are few important tags in pom xml file.**
+    - `<project>` tag, contains the standrd namespace attributes, like `xmlns`, `xmlns:xsi`, `xsi:schemaLocation`.
+    - `<modelVersion>` is the version of the POM format itself, It tells Maven which schema the file follows, so Maven knows how to parse the tags.
+    - `<groupId>` The groupId is a reverse-domain name that identifies who owns the project. The folder structure is then derived from the package name, which conventionally starts with the groupId. Java package names are meant to be globally unique. To guarantee that, the convention is to take a domain you own and reverse it. Apache owns maven.apache.org, so its packages and groupIds start with org.apache.maven.
+    - `<artifactId>` is the name of the artifact this project produces, and it must be unique within its groupId.
+    - `<version>`is the version of your project, e.g. 1.0.0. If you are developing a project, make sure you append `SNAPSHOT` at the end of version. Failing which maven treats your project as immutable release that results in multiple issues while developing the application. 
+    - `<packaging>`what does this pom file produces, possible values are `pom`, `jar` and `war`. Defualt is jar (Java Archive). `jar` instructs maven to build jar using configurations mentioned in the current pom. pom  instructs the maven to produce the no artifacts, only structure and configuration. `war` refers to web application archive, this file is deployed to external servers. 
+    - For parent pom files [pom file present in the root directory], the packaging is always pom. 
+    - How to identify, parent pom? it contains `<modules>` tag, which contains the sub folders. For a child pom file, it contains `<parent>` tag which contains name of the parent `<grounId>` and `<artifactId>`
+    - **Rule of thumb :** One POM per thing that gets built or versioned independently. Shared configuration goes up into the parent, and anything specific to one module stays in that module’s POM.  
