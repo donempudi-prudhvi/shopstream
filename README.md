@@ -64,20 +64,38 @@
 - **Production features:**Actuator (the /actuator/health you called), externalized configuration (application.yml), and metrics.
 - **Executable packaging:** the repackage step that produced your fat jar.
 
-### pom file [Project Object Model]
-- pom is an xml file, Maven needs pom file to build a java application, without it Maven doesn't know what to do. this file must be present at root directory followed by one per sub directory. 
-- pom tells maven the following:
-    - Who the project is ? 
-    - What it needs?
-    - How to build it?
-    - How does this file related to other pom files?
-- **Below are few important tags in pom xml file.**
-    - `<project>` tag, contains the standrd namespace attributes, like `xmlns`, `xmlns:xsi`, `xsi:schemaLocation`.
-    - `<modelVersion>` is the version of the POM format itself, It tells Maven which schema the file follows, so Maven knows how to parse the tags.
-    - `<groupId>` The groupId is a reverse-domain name that identifies who owns the project. The folder structure is then derived from the package name, which conventionally starts with the groupId. Java package names are meant to be globally unique. To guarantee that, the convention is to take a domain you own and reverse it. Apache owns maven.apache.org, so its packages and groupIds start with org.apache.maven.
-    - `<artifactId>` is the name of the artifact this project produces, and it must be unique within its groupId.
-    - `<version>`is the version of your project, e.g. 1.0.0. If you are developing a project, make sure you append `SNAPSHOT` at the end of version. Failing which maven treats your project as immutable release that results in multiple issues while developing the application. 
-    - `<packaging>`what does this pom file produces, possible values are `pom`, `jar` and `war`. Defualt is jar (Java Archive). `jar` instructs maven to build jar using configurations mentioned in the current pom. pom  instructs the maven to produce the no artifacts, only structure and configuration. `war` refers to web application archive, this file is deployed to external servers. 
-    - For parent pom files [pom file present in the root directory], the packaging is always pom. 
-    - How to identify, parent pom? it contains `<modules>` tag, which contains the sub folders. For a child pom file, it contains `<parent>` tag which contains name of the parent `<grounId>` and `<artifactId>`
-    - **Rule of thumb :** One POM per thing that gets built or versioned independently. Shared configuration goes up into the parent, and anything specific to one module stays in that module’s POM.  
+### POM File [Project Object Model]
+- A POM is an XML file (`pom.xml`). Maven needs a POM file to build a Java application; without it, Maven doesn't know what to do. A `pom.xml` must be present in the root directory, plus one in each sub-module directory (if it is a multi-module project).
+- The POM tells Maven:
+  - **Who** the project is
+  - **What** it needs
+  - **How** to build it
+  - **How** this file relates to other POM files
+
+#### Important Tags in `pom.xml`
+- **`<project>`**: The root tag containing standard XML namespace attributes (`xmlns`, `xmlns:xsi`, `xsi:schemaLocation`).
+- **`<modelVersion>`**: The version of the POM schema itself (always `4.0.0` for Maven 2/3), telling Maven how to parse the file.
+- **`<groupId>`**: A reverse-domain name identifying the organization or owner (e.g., `org.apache.maven`). Java package structures conventionally start with this name to ensure global uniqueness.
+- **`<artifactId>`**: The unique name of the artifact (JAR/WAR) this project produces within its `groupId`.
+- **`<version>`**: The version of your project (e.g., `1.0.0-SNAPSHOT`). During active development, append `-SNAPSHOT` so Maven fetches updates dynamically; without it, Maven treats the version as an immutable release.
+- **`<packaging>`**: Defines the output type produced by the POM (`jar`, `war`, or `pom`). Defaults to `jar`. `war` packages a web application for external servers. `pom` produces no code artifact—only configuration and structure (always used for parent POMs).
+- **Parent vs. Child POMs**:
+  - **Parent/Aggregator POM**: Located in the root directory (`<packaging>pom</packaging>`). Uses `<modules>` to list sub-module folders and centralizes shared configurations.
+  - **Child POM**: Located in a sub-module folder. Uses the `<parent>` tag—which **must** include the parent's `<groupId>`, `<artifactId>`, and `<version>`—to inherit settings.
+  - **Rule of thumb**: One POM per component that gets built or versioned independently. Put shared configuration in the parent POM, and module-specific settings in the child POM.
+- **`<properties>`**: Defines reusable variables and build settings such as Java version, Spring Boot version, and source encoding (`UTF-8`).
+- **`<dependencyManagement>`**: Centralizes dependency versions, scopes, and exclusions without actually downloading or adding them to the classpath.
+  - Used in parent POMs so child modules can declare dependencies without specifying `<version>`, or in single POMs to override transitive dependency versions.
+  - When importing a Bill of Materials (BOM), set `<type>pom</type>` and `<scope>import</scope>`.
+- **`<dependencies>`**: Declares the actual libraries required by the current project/module to compile, test, and run.
+- **`<build>`**: Controls how the project is compiled, packaged, and tested.
+  - Any plugin placed directly inside `<build><plugins>` executes automatically during the build lifecycle of the current project and all its children.
+  - Also allows customizing default paths (`<sourceDirectory>`, `<outputDirectory>`), packaging non-Java files like `.yml` or `.properties` (`<resources>`), and setting the output artifact name (`<finalName>`).
+- **`<pluginManagement>`**: Nested inside `<build>`, it works like `<dependencyManagement>` but for Maven plugins. It standardizes plugin versions and configurations across modules without running them automatically; a child module only runs the plugin if it explicitly declares the plugin's `groupId` and `artifactId` in its own `<build><plugins>` section.
+- **`<executions>`**: Nested inside a `<plugin>`, it defines what tasks a plugin runs and when:
+  - **`<id>`**: A unique identifier for the execution block (useful for running a plugin multiple times with different settings or overriding it in a child POM).
+  - **`<phase>`**: Binds the execution to a standard Maven lifecycle step (e.g., `compile`, `test`, `package`, `verify`). Uses the goal's default phase if omitted.
+  - **`<goals>`**: Lists the specific plugin tasks (Mojos) to run (e.g., `shade`, `copy-resources`, `repackage`).
+  - **`<configuration>`**: Optional parameters that apply only to that specific execution, overriding plugin-level settings.
+
+> **Key Takeaway:** In Apache Maven, a **dependency** is a library that your application's code needs to compile and run, while a **plugin** is a tool that Maven itself uses to build, test, and package your project. Simply put, **dependencies are for your code, and plugins are for Maven**.
