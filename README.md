@@ -99,3 +99,22 @@
   - **`<configuration>`**: Optional parameters that apply only to that specific execution, overriding plugin-level settings.
 
 > **Key Takeaway:** In Apache Maven, a **dependency** is a library that your application's code needs to compile and run, while a **plugin** is a tool that Maven itself uses to build, test, and package your project. Simply put, **dependencies are for your code, and plugins are for Maven**.
+
+### application.yaml
+- In SpringBoot applications, `application.yaml` or `application.yml` is a central configuration file that used to customize the behaviour of the application without modifying the source code. On start-up spring reads the key value pairs and use them to configure third party libraries, application context and custom beans. 
+- **The core essence of application.yaml:**
+    - `Externalised configurations` : Also known as separation of concerns, it separates the business logic with configurations like database url, credentials, port on which app runs, api keys without recomipiling the java code. 
+    - `Auto-Configuration Control` : We can use this to control default configurations, for example, embedded Tomcat server runs on 8080 port by default, we can override this if needed. 
+    - `Readability` : The indentation allows to read the configurations without any issues.
+
+- **Understanding few keys**
+    - `server` : Web server, Spring Boot's default embedded Tomcat runs on `8080` port, we can override it to `8081`, `server.port:8081`
+    - `spring.application`: Application identity, I used it to provide the logical name to the application using `spring.application.name`
+    - `spring.datasource`: Specifies the database url, credentials 
+    - `spring.jpa` : Specifies JPA & Hibernate Behavior, e.g. `ddl-auto: validate` and `open-in-view: false`can be specifed in this. 
+    - `management` : Spring Boot Actuator, which provides production monitoring endpoints.
+    - `spring.profiles`: Activates environment-specific overrides (active: dev or prod) or groups multiple profiles together.
+    - `spring.security / spring.kafka / spring.data.redis`: Infrastructure blocks that follow the exact same auto-configuration pattern whenever you add those starters to your pom.xml or build.gradle
+    - `logging`: Controls log levels per package
+**see application.yaml as a reference**
+
