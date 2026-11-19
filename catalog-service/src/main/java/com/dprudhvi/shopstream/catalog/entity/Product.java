@@ -3,6 +3,9 @@ package com.dprudhvi.shopstream.catalog.entity;
 import java.math.BigDecimal;
 import java.time.Instant;
 
+import org.hibernate.annotations.Generated;
+import org.hibernate.generator.EventType;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -19,7 +22,9 @@ public class Product {
     private String name;
     private String description;
     private BigDecimal price;
+    
     @Column(name = "created_at", insertable = false, updatable = false)
+    @Generated (event = EventType.INSERT)
     private Instant createdAt;
 
     public Long getId() {
