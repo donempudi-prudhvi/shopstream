@@ -110,7 +110,7 @@ public class ProductControllerTest {
     }
 
     @Test
-    void update_return400_whenProductDoesNotExists() throws Exception{
+    void update_return404_whenProductDoesNotExists() throws Exception{
         when(service.update(eq(10L), any(ProductRequest.class))).thenThrow(new ProductNotFoundException(10L));   
 
         mockMvc.perform(put("/api/products/10").
